@@ -1,0 +1,13 @@
+# Ignore virtual environment directories
+venv/
+.env/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Test coverage reports
+htmlcov/
+
+# OS specific files
+.DS_Store
