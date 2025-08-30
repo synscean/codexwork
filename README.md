@@ -1,6 +1,6 @@
-# Pygame Environment Template
+# Pygame Meteor Avoidance Game
 
-This repository provides a simple template for setting up a Python virtual environment with the latest stable version of `pygame`.
+This repository contains a vertical-scrolling meteor avoidance game built with `pygame`. The player controls an upward-facing spaceship and dodges falling meteors while stars stream by in the background.
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ This repository provides a simple template for setting up a Python virtual envir
    python scripts/setup_env.py
    ```
 
-   The script will create a virtual environment in the `venv` directory, upgrade `pip`, and install `pygame` along with any other dependencies listed in `requirements.txt`.
+   The script creates a virtual environment in the `venv` directory, upgrades `pip`, and installs `pygame` along with any other dependencies listed in `requirements.txt`.
 
 2. **Activate the virtual environment.**
 
@@ -36,19 +36,28 @@ This repository provides a simple template for setting up a Python virtual envir
    .\venv\Scripts\Activate.ps1
    ```
 
-3. **Run the example program.**
+3. **Download the image assets.**
+
+   Place the following images in the `src/assets` directory:
+
+   - [`spaceship.png` (32x32)](https://assets.st-note.com/img/1744789155-ng0pqZm3B21t4yasCFDVUf5T.png)
+   - [`meteor.png` (32x32)](https://assets.st-note.com/img/1744789160-n6wZcxUK2vbAs1FodlQmVOTR.png)
+   - [`explosion.png` (48x48)](https://assets.st-note.com/img/1744789165-fybnWPSqovDgrG8tH1wjh5lm.png)
+
+   If the images are not available, the program will use magenta placeholders.
+
+4. **Run the game.**
 
    ```bash
    python src/main.py
    ```
 
-   You should see an empty window created by `pygame`. Close the window to exit the program.
+   Use the left and right arrow keys to avoid the falling meteors. The game ends when the spaceship is hit and an explosion occurs.
 
 ## Project Structure
 
-- `requirements.txt` – Python package requirements, specifying a modern `pygame` version.
+- `requirements.txt` – Python package requirements specifying a modern `pygame` version.
 - `scripts/setup_env.py` – Script to create and configure the virtual environment.
-- `src/main.py` – Minimal example demonstrating that `pygame` works correctly.
+- `src/main.py` – Game implementation.
+- `src/assets/` – Directory for image assets used by the game.
 - `.gitignore` – Keeps generated files such as the virtual environment out of version control.
-
-Feel free to modify or expand this template to suit your project needs.
