@@ -159,6 +159,31 @@ class HomingMeteor(Meteor):
         super().update(*args, **kwargs)
 
 
+class Shield(pygame.sprite.Sprite):
+    """A shield that protects the spaceship from one impact."""
+
+    def __init__(self, spaceship: Spaceship) -> None:
+        super().__init__()
+        self.spaceship = spaceship
+        # Create a surface for the shield, slightly larger than the ship
+        self.image = pygame.Surface((50, 50), pygame.SRCALPHA)
+        # Draw a semi-transparent blue arc for the shield effect
+        shield_rect = self.image.get_rect()
+        pygame.draw.arc(
+            self.image,
+            (100, 200, 255, 180),  # Light blue, semi-transparent
+            shield_rect.inflate(-8, -8),  # Make it a bit smaller than the surface
+            0.4,  # Start angle in radians
+            2.74,  # Stop angle in radians
+            4,  # Width of the arc
+        )
+        self.rect = self.image.get_rect(center=self.spaceship.rect.center)
+
+    def update(self, *args, **kwargs) -> None:
+        """Keep the shield's position centered on the spaceship."""
+        self.rect.center = self.spaceship.rect.center
+
+
 def draw_centered_text(surface: pygame.Surface, text: str, font: pygame.font.Font, color: tuple[int, int, int], y_offset: int = 0) -> None:
     """Render and draw text centered on the screen."""
     text_surface = font.render(text, True, color)
@@ -192,6 +217,7 @@ def main() -> None:
     stars = [Star() for _ in range(STAR_COUNT)]
     spaceship = Spaceship(spaceship_image)
     meteor_group = pygame.sprite.Group()
+    shield_group = pygame.sprite.GroupSingle()
     all_sprites = pygame.sprite.Group(spaceship)
 
     clock = pygame.time.Clock()
@@ -211,6 +237,10 @@ def main() -> None:
             if game_state == GameState.PLAYING:
                 if event.type == METEOR_PASSED_EVENT:
                     score += 1
+                    if score > 0 and score % 5 == 0 and not shield_group.sprite:
+                        shield = Shield(spaceship)
+                        shield_group.add(shield)
+                        all_sprites.add(shield)
             elif game_state == GameState.GAME_OVER:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_y:
@@ -218,6 +248,7 @@ def main() -> None:
                         score = 0
                         spaceship.rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 60)
                         meteor_group.empty()
+                        shield_group.empty()
                         all_sprites.empty()
                         all_sprites.add(spaceship)
                         last_spawn_time = pygame.time.get_ticks()
@@ -243,6 +274,7 @@ def main() -> None:
 
             spaceship.update(move_left, move_right)
             meteor_group.update(player=spaceship)
+            shield_group.update()
             for star in stars:
                 star.update()
 
@@ -257,7 +289,12 @@ def main() -> None:
             display_surface.blit(score_surface, score_rect)
 
             # --- Collision Detection ---
-            if pygame.sprite.spritecollide(spaceship, meteor_group, False):
+            # Check if the shield is hit, destroying both shield and meteor
+            if pygame.sprite.groupcollide(shield_group, meteor_group, True, True):
+                # Shield was hit and destroyed, no further action needed
+                pass
+            # If no shield was hit (or no shield exists), check for player collision
+            elif pygame.sprite.spritecollide(spaceship, meteor_group, False):
                 explosion_rect = explosion_image.get_rect(center=spaceship.rect.center)
                 display_surface.blit(explosion_image, explosion_rect)
                 game_state = GameState.GAME_OVER
